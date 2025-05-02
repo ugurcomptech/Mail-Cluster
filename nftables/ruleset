@@ -1,0 +1,32 @@
+table inet filter {
+        chain input {
+                type filter hook input priority filter; policy accept;
+                iif "lo" accept
+                ip protocol icmp icmp type echo-request limit rate over 10/second burst 4 packets drop
+                ip6 nexthdr ipv6-icmp icmpv6 type echo-request limit rate over 10/second burst 4 packets drop
+                ct state established,related accept
+                ip6 nexthdr ipv6-icmp icmpv6 type { destination-unreachable, packet-too-big, time-exceeded, parameter-problem, echo-request, mld-listener-query, mld-listener-report, mld-listener-done, nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, ind-neighbor-solicit, ind-neighbor-advert, mld2-listener-report } accept
+                ip protocol icmp icmp type { destination-unreachable, echo-request, router-advertisement, router-solicitation, time-exceeded, parameter-problem } accept
+                ip protocol igmp accept
+                tcp dport 22 accept
+                tcp dport 80 accept
+                tcp dport 443 accept
+                tcp dport 25 accept
+                tcp dport 587 accept
+                tcp dport 465 accept
+                tcp dport 110 accept
+                tcp dport 995 accept
+                tcp dport 143 accept
+                tcp dport 993 accept
+                tcp dport 3306 accept
+                counter packets 2898 bytes 526798 drop
+        }
+
+        chain output {
+                type filter hook output priority filter; policy accept;
+        }
+
+        chain forward {
+                type filter hook forward priority filter; policy drop;
+        }
+}
