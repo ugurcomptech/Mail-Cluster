@@ -1,0 +1,28 @@
+[mysqld]
+server-id                   = 1
+log_bin                     = /var/log/mariadb/mariadb-bin.log
+log-bin-index               = /var/log/mariadb/log-bin.index
+log-error                   = /var/log/mariadb/error.log
+relay-log                   = /var/log/mariadb/relay.log
+relay-log-info-file         = /var/log/mariadb/relay-log.info
+relay-log-index             = /var/log/mariadb/relay-log.index
+auto_increment_increment   = 10
+auto_increment_offset       = 1
+
+# Binlog settings for specific databases
+binlog-do-db                = amavisd
+binlog-do-db                = iredadmin
+binlog-do-db                = roundcubemail
+binlog-do-db                = vmail
+# Ignore specific databases for binlog
+binlog-ignore-db            = information_schema
+binlog-ignore-db            = mysql
+binlog-ignore-db            = iredapd
+
+# Log slave updates (necessary for replication)
+log-slave-updates           = 1
+
+# Replication settings to ignore specific databases
+replicate-ignore-db         = information_schema
+replicate-ignore-db         = mysql
+replicate-ignore-db         = iredapd
