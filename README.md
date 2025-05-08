@@ -1,6 +1,12 @@
 # 📧 Mail Cluster Mimarisi
 
-Bu projede, yüksek erişilebilirlik ve veri bütünlüğü sağlayan bir mail cluster sistemi tasarlanmıştır. Sistem, aşağıdaki bileşenlerden oluşmaktadır:
+Bu repo, yüksek erişilebilirlik ve veri bütünlüğü sağlayan bir mail cluster sistemi oluşturma sürecini detaylandırmaktadır. Sunucu altyapısında kullanılan temel bileşenler arasında HAProxy, MariaDB Master-Master replikasyonu, ZFS dosya sistemi ile mail verisi senkronizasyonu ve opsiyonel olarak Mail Gateway yer almaktadır. Bu proje, özellikle büyük ölçekli e-posta hizmetleri için güvenilir bir yapı inşa etmeye yönelik tasarlanmıştır.
+
+Projede kullanılan HAProxy, webmail erişiminin yük dengelemesini sağlarken, iki webmail sunucusu arasında trafiği eşit bir şekilde dağıtarak yüksek erişilebilirlik sunmaktadır. MariaDB, her iki sunucuda da yazılabilir veri sağlarken, ZFS dosya sistemi ile mail verilerinin senkronizasyonu yapılır. Bu sayede, veri kaybı olmadan hizmet sürekliliği sağlanmış olur.
+
+Mail sunucularındaki yapılandırmalar, güvenlik ve performans odaklıdır. Opsiyonel olarak eklenen Mail Gateway, mail sunucusuna gelen zararlı içeriklerin filtrelenmesine yardımcı olur. Bu yapı, e-posta iletimini güvenli bir şekilde sağlar ve kullanıcı deneyimini iyileştirir.
+
+Projede yer alan tüm yapılandırmalar, modern e-posta hizmetlerinin gereksinimlerini karşılamak üzere tasarlanmış ve detaylı bir şekilde belgelenmiştir. Kendi altyapınıza entegre etmek veya benzer bir sistem kurmak isteyenler için bu repo, kapsamlı bir kaynak sunmaktadır.
 
 ## 🗺️ Genel Topoloji Diyagramı
 
