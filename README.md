@@ -23,8 +23,6 @@ graph TD
     J -->|ZFS Send/Receive| K
 ```
 
-
-
 ## 🔁 Yük Dengeleme (Web Arayüzü)
 
 Web tabanlı erişim (ör. webmail veya yönetim panelleri), **HAProxy** ile yük dengelemesi yapılarak iki sunucu arasında dağıtılmıştır.  
@@ -47,6 +45,15 @@ Bu sistem ile:
 - Dosya tutarlılığı ve yedeklilik elde edilmiştir.
 
 ## 🔧 HAProxy Yapılandırması
+
+```mermaid
+graph TD
+    A[Kullanıcı] -->|HTTPS| B[HAProxy]
+    B -->|Birincil| C[Webmail1:<br>192.168.1.10]
+    B -->|Yedek| D[Webmail2:<br>192.168.1.11]
+    C --> E{Nginx/Apache}
+    D --> F{Nginx/Apache}
+```
 
 Web arayüzünün yüksek erişilebilirliğini sağlamak için HAProxy yapılandırması yapılmıştır.  
 Birincil (Primary) sunucuda **Nginx** veya **Apache** servislerinde sorun oluştuğunda, istekler otomatik olarak ikincil (Secondary) sunucuya yönlendirilerek kesintisiz **Webmail** hizmeti sağlanır.
@@ -89,17 +96,14 @@ backend webmail_back
 
 > 🔄 **Not**: IP adresleri örnek olarak verilmiştir. Kendi altyapınıza göre güncelleyin.
 
-### Diyagram
+## 📬 Mail Gateway Yapılandırması (Opsiyonel)
+
 ```mermaid
 graph TD
-    A[Kullanıcı] -->|HTTPS| B[HAProxy]
-    B -->|Birincil| C[Webmail1:<br>192.168.1.10]
-    B -->|Yedek| D[Webmail2:<br>192.168.1.11]
-    C --> E{Nginx/Apache}
-    D --> F{Nginx/Apache}
+    A[İnternet] -->|SMTP| B[PMG]
+    B -->|Birincil| C[Mail Sunucusu1:<br>192.168.1.10]
+    B -->|Yedek| D[Mail Sunucusu2:<br>192.168.1.11]
 ```
-
-## 📬 Mail Gateway Yapılandırması (Opsiyonel)
 
 **Mail Gateway** kullanımı, güvenlik ve kararlılık açısından önerilir.  
 Bu, saldırganların mail sunucusuna zararlı dosyalar veya oltalama (phishing) mailleri göndermesini engeller.  
@@ -133,15 +137,18 @@ bounce_queue_lifetime = 1h
 
 > 🔄 Bu yapılandırma, gateway üzerinden yedeklilik ve güvenli bir mail sistemi sağlar.
 
-### Diyagram
-```mermaid
-graph TD
-    A[İnternet] -->|SMTP| B[PMG]
-    B -->|Birincil| C[Mail Sunucusu1:<br>192.168.1.10]
-    B -->|Yedek| D[Mail Sunucusu2:<br>192.168.1.11]
-```
+
 
 ## 🛠️ MariaDB Master-Master Replikasyon
+
+
+```mermaid
+graph TD
+    A[Primary DB:<br>192.168.1.10] -->|Replikasyon| B[Secondary DB:<br>192.168.1.11]
+    B -->|Replikasyon| A
+    A --> C[Webmail/Uygulama]
+    B --> C
+```
 
 **MariaDB** veritabanı ile **Master-Master replikasyon** yöntemi kullanılmıştır.  
 Yapılandırma dosyalarına bu repodan ulaşabilirsiniz.
@@ -232,16 +239,16 @@ Değişiklikler senkronize olduysa yapılandırma başarılıdır.
 
 > 🔁 **Not**: Kullanıcı ekleme veya değiştirme işlemleri yalnızca **Primary** sunucuda yapılmalıdır.
 
-### Diyagram
-```mermaid
-graph TD
-    A[Primary DB:<br>192.168.1.10] -->|Replikasyon| B[Secondary DB:<br>192.168.1.11]
-    B -->|Replikasyon| A
-    A --> C[Webmail/Uygulama]
-    B --> C
-```
+
 
 ## 📁 ZFS ile Mail Verisi Senkronizasyonu
+
+```mermaid
+graph TD
+    A[Primary: ZFS vmail] -->|zfs send/receive| B[Secondary: ZFS vmail]
+    A --> C[/var/vmail/]
+    B --> D[/var/vmail/]
+```
 
 ZFS dosya sistemi, **Primary** sunucudan **Secondary** sunucuya snapshotlar aracılığıyla tek taraflı senkronizasyon sağlar.  
 ZFS `send` ve `receive` komutları kullanılarak snapshotlar belirli aralıklarla **Primary** sunucudan **Secondary** sunucuya aktarılır.  
@@ -331,10 +338,13 @@ Repoda bulunan script, her gün belirli bir saatte snapshot alarak **Secondary**
 0 2 * * * /path/to/zfs-sync.sh
 ```
 
-### Diyagram
-```mermaid
-graph TD
-    A[Primary: ZFS vmail] -->|zfs send/receive| B[Secondary: ZFS vmail]
-    A --> C[/var/vmail/]
-    B --> D[/var/vmail/]
-```
+
+
+
+
+## Teşekkürler
+
+Bu projeyi hayata geçirirken edindiğim bilgi ve tecrübeler, sistem mimarisi ve dağıtık yapıların gücünü daha yakından anlamamı sağladı. Her bir bileşeni detaylı bir şekilde planlamak, uygulamak ve test etmek, hem teknik becerilerimi hem de problem çözme yetkinliğimi geliştirdi.
+
+Bu süreçte bana doğrudan veya dolaylı katkı sunan herkese teşekkür ederim. Ayrıca, açık kaynak toplulukları ve ilgili teknik dökümantasyonların sağladığı kaynaklar sayesinde bu mimari daha sağlam temeller üzerine oturtuldu. Paylaşımın gücüne inanıyor ve bu çalışmanın başkalarına da ilham olmasını umuyorum.
+
