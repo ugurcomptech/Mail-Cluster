@@ -9,16 +9,17 @@ Aşağıdaki diyagram, mail cluster mimarisinin tüm bileşenlerini özetler:
 ```mermaid
 graph TD
     A[İnternet] -->|HTTPS| B[HAProxy]
-    A -->|SMTP| C[Mail Gateway (Opsiyonel)]
-    B -->|Yük Dengeleme| D[Webmail1: 192.168.1.10]
-    B -->|Yük Dengeleme| E[Webmail2: 192.168.1.11]
-    C -->|SMTP| F[Mail Sunucusu1: 192.168.1.10]
-    C -->|SMTP| G[Mail Sunucusu2: 192.168.1.11]
+    A -->|SMTP| C[Mail Gateway<br>(Opsiyonel)]
+    B -->|Yük Dengeleme| D[Webmail1:<br>192.168.1.10]
+    B -->|Yük Dengeleme| E[Webmail2:<br>192.168.1.11]
+    C -->|SMTP| F[Mail Sunucusu1:<br>192.168.1.10]
+    C -->|SMTP| G[Mail Sunucusu2:<br>192.168.1.11]
     D --> H[MariaDB Primary]
     E --> I[MariaDB Secondary]
-    H -->|Master-Master Replikasyon| I
-    D --> J[ZFS Primary: /var/vmail]
-    E --> K[ZFS Secondary: /var/vmail]
+    H -->|Master-Master<br>Replikasyon| I
+    I -->|Master-Master<br>Replikasyon| H
+    D --> J[ZFS Primary:<br>/var/vmail]
+    E --> K[ZFS Secondary:<br>/var/vmail]
     J -->|ZFS Send/Receive| K
 ```
 
@@ -90,8 +91,8 @@ backend webmail_back
 ```mermaid
 graph TD
     A[Kullanıcı] -->|HTTPS| B[HAProxy]
-    B -->|Birincil| C[Webmail1: 192.168.1.10]
-    B -->|Yedek| D[Webmail2: 192.168.1.11]
+    B -->|Birincil| C[Webmail1:<br>192.168.1.10]
+    B -->|Yedek| D[Webmail2:<br>192.168.1.11]
     C --> E{Nginx/Apache}
     D --> F{Nginx/Apache}
 ```
@@ -134,8 +135,8 @@ bounce_queue_lifetime = 1h
 ```mermaid
 graph TD
     A[İnternet] -->|SMTP| B[PMG]
-    B -->|Birincil| C[Mail Sunucusu1: 192.168.1.10]
-    B -->|Yedek| D[Mail Sunucusu2: 192.168.1.11]
+    B -->|Birincil| C[Mail Sunucusu1:<br>192.168.1.10]
+    B -->|Yedek| D[Mail Sunucusu2:<br>192.168.1.11]
 ```
 
 ## 🛠️ MariaDB Master-Master Replikasyon
@@ -232,7 +233,7 @@ Değişiklikler senkronize olduysa yapılandırma başarılıdır.
 ### Diyagram
 ```mermaid
 graph TD
-    A[Primary DB: 192.168.1.10] -->|Replikasyon| B[Secondary DB: 192.168.1.11]
+    A[Primary DB:<br>192.168.1.10] -->|Replikasyon| B[Secondary DB:<br>192.168.1.11]
     B -->|Replikasyon| A
     A --> C[Webmail/Uygulama]
     B --> C
@@ -332,6 +333,6 @@ Repoda bulunan script, her gün belirli bir saatte snapshot alarak **Secondary**
 ```mermaid
 graph TD
     A[Primary: ZFS vmail] -->|zfs send/receive| B[Secondary: ZFS vmail]
-    A --> C[/var/vmail]
-    B --> D[/var/vmail]
+    A --> C[/var/vmail/]
+    B --> D[/var/vmail/]
 ```
