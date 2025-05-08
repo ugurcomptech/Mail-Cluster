@@ -341,7 +341,7 @@ sudo zfs get mountpoint vmail
 Repoda bulunan script, her gün belirli bir saatte snapshot alarak **Secondary** sunucuya gönderir. Scripti crontab’a ekleyin veya özelleştirin:
 
 ```bash
-0 2 * * * /path/to/zfs-sync.sh
+0 2 * * * /path/to/zfs_backup.sh
 ```
 
 
