@@ -9,19 +9,20 @@ Aşağıdaki diyagram, mail cluster mimarisinin tüm bileşenlerini özetler:
 ```mermaid
 graph TD
     A[İnternet] -->|HTTPS| B[HAProxy]
-    A -->|SMTP| C[Mail Gateway<br>(Opsiyonel)]
-    B -->|Yük Dengeleme| D[Webmail1:<br>192.168.1.10]
-    B -->|Yük Dengeleme| E[Webmail2:<br>192.168.1.11]
-    C -->|SMTP| F[Mail Sunucusu1:<br>192.168.1.10]
-    C -->|SMTP| G[Mail Sunucusu2:<br>192.168.1.11]
+    A -->|SMTP| C[Mail Gateway\n(Opsiyonel)]
+    B -->|Yük Dengeleme| D[Webmail1:\n192.168.1.10]
+    B -->|Yük Dengeleme| E[Webmail2:\n192.168.1.11]
+    C -->|SMTP| F[Mail Sunucusu1:\n192.168.1.10]
+    C -->|SMTP| G[Mail Sunucusu2:\n192.168.1.11]
     D --> H[MariaDB Primary]
     E --> I[MariaDB Secondary]
-    H -->|Master-Master<br>Replikasyon| I
-    I -->|Master-Master<br>Replikasyon| H
-    D --> J[ZFS Primary:<br>/var/vmail]
-    E --> K[ZFS Secondary:<br>/var/vmail]
+    H -->|Master-Master\nReplikasyon| I
+    I -->|Master-Master\nReplikasyon| H
+    D --> J[ZFS Primary:\n/var/vmail]
+    E --> K[ZFS Secondary:\n/var/vmail]
     J -->|ZFS Send/Receive| K
 ```
+
 
 ## 🔁 Yük Dengeleme (Web Arayüzü)
 
