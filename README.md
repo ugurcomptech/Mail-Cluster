@@ -113,7 +113,7 @@ graph TD
 
 **Mail Gateway** kullanımı, güvenlik ve kararlılık açısından önerilir.  
 Bu, saldırganların mail sunucusuna zararlı dosyalar veya oltalama (phishing) mailleri göndermesini engeller.  
-Mail Gateway yapılandırması **opsiyoneldir**. Aşağıdaki **MX kayıtları** ile bu yapıyı kurabilirsiniz:
+Mail Gateway yapılandırması **opsiyoneldir**. Alternatif olarak maillerin kesintisiz sağlanması için aşağıdaki **MX kayıtları** ile  işlem sağlayabilirsiniz:
 
 ```dns
 @ IN MX 10 mail.test.com
