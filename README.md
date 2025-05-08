@@ -120,7 +120,102 @@ bounce_queue_lifetime = 1h
 
 
 
+## 🛠️ MariaDB Master-Master Replikasyon
 
+Bu sistemde **MariaDB** veritabanı kullanılmakta olup, **Master-Master replikasyon** yöntemi tercih edilmiştir.  
+MariaDB'ye ait yapılandırma dosyalarına bu repoda ulaşabilirsiniz.
+
+---
+
+### 🔹 1. Adım: Primary Sunucuda Yapılacaklar
+
+İlk olarak **primary** sunucunuza bağlanın ve MySQL oturumunu başlatın:
+
+```sql
+CREATE USER 'replicator'@'%' IDENTIFIED BY '12345678';
+GRANT REPLICATION SLAVE ON *.* TO 'replicator'@'%';
+SHOW MASTER STATUS;
+```
+
+Örnek çıktı:
+
+```text
++--------------------+----------+----------------------------------------------+-------------------------------+
+| File               | Position | Binlog_Do_DB                                 | Binlog_Ignore_DB              |
++--------------------+----------+----------------------------------------------+-------------------------------+
+| mariadb-bin.000001 |      245 | amavisd,iredadmin,iredapd,roundcubemail,sogo | test,information_schema,mysql |
++--------------------+----------+----------------------------------------------+-------------------------------+
+```
+
+> ℹ️ `File` ve `Position` alanları, replikasyonun nereye kadar senkronize edileceğini gösterir. Bu değerleri **secondary sunucuda** kullanacağız.
+
+---
+
+### 🔹 2. Adım: Secondary Sunucuda Yapılacaklar
+
+Secondary sunucuya geçin ve aşağıdaki komutları çalıştırın:
+
+```sql
+CREATE USER 'replicator'@'%' IDENTIFIED BY '12345678';
+GRANT REPLICATION SLAVE ON *.* TO 'replicator'@'%';
+
+STOP SLAVE;
+CHANGE MASTER TO 
+    MASTER_HOST='192.168.1.10',
+    MASTER_USER='replicator',
+    MASTER_PASSWORD='12345678',
+    MASTER_LOG_FILE='mariadb-bin.000001',
+    MASTER_LOG_POS=245;
+
+START SLAVE;
+SHOW MASTER STATUS;
+SHOW SLAVE STATUS\G;
+```
+
+> 📌 `MASTER_LOG_FILE` ve `MASTER_LOG_POS` değerlerini **primary sunucudaki** çıktıya göre doldurun.
+
+Sunucuyu yeniden başlatın:
+
+```bash
+systemctl restart mariadb
+```
+
+---
+
+### 🔹 3. Adım: Primary Sunucuyu Secondary’ye Bağlamak
+
+Şimdi tekrar **primary** sunucuya dönüp replikasyonu ters yönde yapılandırıyoruz:
+
+```sql
+STOP SLAVE;
+CHANGE MASTER TO 
+    MASTER_HOST='192.168.1.11',
+    MASTER_USER='replicator',
+    MASTER_PASSWORD='12345678',
+    MASTER_LOG_FILE='mariadb-bin.000001',
+    MASTER_LOG_POS=289;
+
+START SLAVE;
+SHOW SLAVE STATUS\G;
+```
+
+> 📌 `MASTER_LOG_POS` değeri **secondary sunucunun** `SHOW MASTER STATUS` çıktısına göre ayarlanmalıdır.
+
+MariaDB servisini yeniden başlatın:
+
+```bash
+systemctl restart mariadb
+```
+
+---
+
+### ✅ Test Etme
+
+Herhangi bir posta sunucusundan **RoundcubeMail** arayüzü ile giriş yaparak test edin.  
+Daha sonra `roundcubemail -> users` tablosunu her iki sunucuda da kontrol edin.  
+Değişiklikler başarılı bir şekilde senkronize olduysa yapılandırma doğru yapılmış demektir.
+
+> 🔁 Artık iki sunucu arasında veri karşılıklı olarak eşitlenmektedir.
 
 
 
