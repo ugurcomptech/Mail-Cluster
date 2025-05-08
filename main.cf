@@ -1,4 +1,4 @@
-relay_transport = smtp:45.152.243.26:25
-smtp_fallback_relay = [45.152.243.246]:25 # primary server down olursa mailler buraya yönlendirilir.
+relay_transport = smtp:192.168.1.10:25
+smtp_fallback_relay = [192.168.1.11]:25 # primary server down olursa mailler buraya yönlendirilir.
 soft_bounce = yes
 bounce_queue_lifetime = 1h
