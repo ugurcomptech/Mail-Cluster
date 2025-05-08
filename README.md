@@ -137,8 +137,6 @@ bounce_queue_lifetime = 1h
 
 > 🔄 Bu yapılandırma, gateway üzerinden yedeklilik ve güvenli bir mail sistemi sağlar.
 
-
-
 ## 🛠️ MariaDB Master-Master Replikasyon
 
 
@@ -151,7 +149,6 @@ graph TD
 ```
 
 **MariaDB** veritabanı ile **Master-Master replikasyon** yöntemi kullanılmıştır.  
-Yapılandırma dosyalarına bu repodan ulaşabilirsiniz.
 
 ### 🔹 1. Adım: Primary Sunucuda Yapılacaklar
 
@@ -164,6 +161,7 @@ SHOW MASTER STATUS;
 ```
 
 > ⚠️ **Güvenlik Notu**: Gerçek sisteminizde `12345678` yerine güçlü bir parola kullanmalısınız (ör. en az 16 karakter, harf, rakam ve özel karakter içeren).
+> ⚠️ ** MySQL Port**: 3306 portunu kullanmış olduğunuz FW yazılımına göre dış dünyaya veya sadece replikasyon yapacağınız sunucuya açmayı unutmayınız.
 
 Örnek çıktı:
 
