@@ -47,7 +47,7 @@ backend webmail_back
     server webmail2 192.168.1.10:443 ssl verify none check backup
 ```
 
-### 🧩 Yapılandırma Açıklamaları:
+### 🧩 Yapılandırmaya Ait Açıklamalar:
 
 - `frontend webmail_https`: Gelen HTTPS bağlantılarını karşılayan ön uç (frontend) tanımıdır.
 - `bind *:443 ssl crt /etc/haproxy/certs/test.com.pem`: 443 numaralı port üzerinden SSL sertifikası ile bağlantı kabul edilir. Sertifika dosyası burada belirtilmiştir.
@@ -72,6 +72,56 @@ backend webmail_back
   İkincil (yedek) webmail sunucusudur. `backup` etiketi sayesinde sadece birincil sunucu erişilemez hale geldiğinde devreye girer.
 
 > 🔄 Not: IP adresleri örnek olarak verilmiştir. Kendi altyapınıza göre güncellemeniz gerekmektedir.
+
+
+
+## 📬 Mail Gateway Yapılandırması (Opsiyonel)
+
+Mail sunucularımız için bir **Mail Gateway** kullanmak, güvenlik ve kararlılık açısından her zaman daha sağlıklıdır.  
+Bu sayede saldırganlar, doğrudan mail sunucunuza zararlı dosyalar veya oltalama (phishing) mailleri gönderemez.  
+Mail Gateway yapılandırması **opsiyoneldir**. Dilerseniz aşağıdaki örnekteki gibi **MX kayıtları** tanımlayarak da bu yapıyı kurabilirsiniz:
+
+```dns
+@ IN MX (10) mail.test.com
+@ IN MX (20) backupmail.test.com
+```
+
+> 📌 DNS kaydınızda belirlemiş olduğunuz öncelik değerine göre mail iletimi sağlanır.  
+> Örneğin; birincil sunucuda sorun yaşanırsa, gönderilen e-postalar ikinci öncelikli sunucuya yönlendirilir.
+
+---
+
+Ben bu yapılandırmada **Proxmox Mail Gateway (PMG)** kullanmaktayım.  
+Aşağıda paylaştığım yapılandırma, **Postfix** tabanlı sistemler için uygundur.  
+Eğer farklı bir **SMTP** sunucusu kullanıyorsanız, yapılandırmayı ona göre uyarlamanız gerekir.
+
+```postfix
+relay_transport = smtp:192.168.1.10:25
+smtp_fallback_relay = [192.168.1.11]:25
+soft_bounce = yes
+bounce_queue_lifetime = 1h
+```
+
+### ⚙️ Açıklamalar:
+
+- `relay_transport = smtp:192.168.1.10:25`:  
+  Gelen maillerin ilk olarak bu IP adresindeki SMTP sunucusuna yönlendirilmesini sağlar.
+
+- `smtp_fallback_relay = [192.168.1.11]:25`:  
+  Eğer birincil sunucu (192.168.1.10) çalışmazsa, e-postalar bu IP'ye sahip yedek sunucuya yönlendirilir.
+
+- `soft_bounce = yes`:  
+  Geçici teslim hatalarında, mesajın tamamen reddedilmesini engeller.
+
+- `bounce_queue_lifetime = 1h`:  
+  Teslim edilemeyen maillerin kuyrukta ne kadar süre tutulacağını belirler (örneğin 1 saat).
+
+> 🔄 Bu yapılandırma sayesinde, gateway üzerinden hem yedeklilik sağlanmış olur hem de daha güvenli bir mail sistemi elde edilir.
+
+
+
+
+
 
 
 
