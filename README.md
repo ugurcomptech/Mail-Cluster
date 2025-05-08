@@ -161,7 +161,9 @@ SHOW MASTER STATUS;
 ```
 
 > ⚠️ **Güvenlik Notu**: Gerçek sisteminizde `12345678` yerine güçlü bir parola kullanmalısınız (ör. en az 16 karakter, harf, rakam ve özel karakter içeren).
+
 > ⚠️ ** MySQL Port**: 3306 portunu kullanmış olduğunuz FW yazılımına göre dış dünyaya veya sadece replikasyon yapacağınız sunucuya açmayı unutmayınız.
+
 
 Örnek çıktı:
 
