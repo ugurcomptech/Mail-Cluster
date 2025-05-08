@@ -345,7 +345,10 @@ Repoda bulunan script, her gün belirli bir saatte snapshot alarak **Secondary**
 ```
 
 
+## Kaynaklar
 
+1. [iRedMail HAProxy, Keepalived ve GlusterFS Yapılandırması](https://docs.iredmail.org/haproxy.keepalived.glusterfs.html)
+2. [OpenZFS Belgeleri](https://openzfs.github.io/openzfs-docs/)
 
 
 ## Teşekkürler
